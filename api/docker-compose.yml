@@ -1,0 +1,31 @@
+version: "3"
+services:
+  node-app:
+    container_name: "api"
+    build: .
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    ports:
+      - "8090:8090"
+    networks:
+      - app-network
+    command: "./assets/entrypoint.sh"
+    restart: on-failure
+
+  postgres:
+    container_name: "pg"
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: docker
+    volumes:
+      - ./assets/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
